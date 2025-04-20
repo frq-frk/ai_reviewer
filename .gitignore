@@ -1,0 +1,112 @@
+notes.txt
+HELP.md
+target/
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/
+
+### STS ###
+.apt_generated
+.classpath
+.factorypath
+.project
+.settings
+.springBeans
+.sts4-cache
+
+### IntelliJ IDEA ###
+.idea
+*.iws
+*.iml
+*.ipr
+
+### NetBeans ###
+/nbproject/private/
+/nbbuild/
+/dist/
+/nbdist/
+/.nb-gradle/
+build/
+!**/src/main/**/build/
+!**/src/test/**/build/
+
+### VS Code ###
+.vscode/
+
+# === Java ===
+*.class
+*.log
+*.war
+*.ear
+*.jar
+
+# === Compiled class files ===
+target/
+bin/
+build/
+
+# === IntelliJ IDEA ===
+.idea/
+*.iml
+out/
+
+# === Eclipse ===
+.project
+.classpath
+.csettings/
+.settings/
+.metadata/
+
+# === Maven ===
+log/
+target/
+dependency-reduced-pom.xml
+release.properties
+
+# === Logs ===
+*.log
+logs/
+*.pid
+
+# === OS Files ===
+.DS_Store
+Thumbs.db
+
+# === Spring Boot Config ===
+# Prevent committing local or secret configs
+src/main/resources/application.properties
+src/main/resources/application.yml
+src/main/resources/application-dev.properties
+src/main/resources/application-prod.properties
+
+# === Test Coverage ===
+coverage/
+jacoco.exec
+*.ec
+*.exec
+
+# === Environment Files ===
+.env
+.env.*
+
+# === OpenAI & GitHub Keys (just in case stored manually) ===
+openai.key
+github.token
+
+# === Others ===
+*.swp
+*.swo
+*.bak
+
+# === VS Code ===
+.vscode/
+
+# === Git ===
+*.orig
+*.rej
+*.patch
+
+# === Custom Local Scripts or Temp ===
+scripts/*.sh
+tmp/
+

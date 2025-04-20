@@ -1,0 +1,23 @@
+{
+  "action": "opened",
+  "pull_request": {
+    "number": 1,
+    "title": "Update README.md",
+    "html_url": "https://github.com/frq-frk/test/pull/1",
+    "user": {
+      "login": "frq-frk"
+    },
+    "head": {
+      "repo": {
+        "full_name": "test-user/test-repo"
+      },
+      "sha": "abc123"
+    }
+  },
+  "repository": {
+    "name": "test",
+    "owner": {
+      "login": "frq-frk"
+    }
+  }
+}
