@@ -3,25 +3,38 @@ package com.saiyans.aicodereviewer.service;
 import java.util.List;
 import java.util.Map;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 
 @Service
 public class LLMReviewService {
+	
+	
+	private static final Logger log = LoggerFactory.getLogger(LLMReviewService.class);
 
-    @Value("${openai.api.key}")
-    private String apiKey;
 
-    private final WebClient webClient = WebClient.builder()
-            .baseUrl("https://api.openai.com/v1/chat/completions")
-            .defaultHeader(HttpHeaders.AUTHORIZATION, "Bearer " + apiKey)
-            .build();
+//    @Value("${openai.api.key}")
+//    private String apiKey;
+    
+    private final WebClient webClient;
+
+    public LLMReviewService(@Value("${openai.api.key}") String apiKey) {
+    	log.info(apiKey);
+        this.webClient = WebClient.builder()
+                .baseUrl("https://api.openai.com/v1/chat/completions")
+                .defaultHeader("Authorization", "Bearer " + apiKey)
+                .build();
+    }
 
     public String getReviewForDiff(String filename, String diff) {
-        String prompt = buildPrompt(filename, diff);
+    	
+    	String prompt = buildPrompt(filename, diff);
 
+        log.info("prompt for llm: {}", prompt);
+        
         Map<String, Object> request = Map.of(
             "model", "gpt-3.5-turbo",
             "messages", List.of(

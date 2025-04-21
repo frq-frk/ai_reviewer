@@ -20,6 +20,8 @@ import com.saiyans.aicodereviewer.repository.PullRequestRepository;
 import com.saiyans.aicodereviewer.repository.ReviewCommentRepository;
 import com.saiyans.aicodereviewer.service.LLMReviewService;
 
+import jakarta.transaction.Transactional;
+
 @Component
 public class ReviewWorker {
 
@@ -38,9 +40,10 @@ public class ReviewWorker {
         this.reviewCommentRepo = reviewCommentRepo;
     }
 
+    @Transactional
     @Scheduled(fixedRate = 10000) // every 10 seconds
     public void processPendingReviews() {
-        List<PullRequest> pendingPRs = prRepo.findTop3ByReviewStatusOrderByCreatedAtAsc(ReviewStatus.PENDING);
+        List<PullRequest> pendingPRs = prRepo.findPendingPullRequestsWithFiles();
 
         for (PullRequest pr : pendingPRs) {
             try {
