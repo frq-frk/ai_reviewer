@@ -14,10 +14,6 @@ public class LLMReviewService {
 	
 	
 	private static final Logger log = LoggerFactory.getLogger(LLMReviewService.class);
-
-
-//    @Value("${openai.api.key}")
-//    private String apiKey;
     
     private final WebClient webClient;
 
@@ -49,23 +45,31 @@ public class LLMReviewService {
             .bodyToMono(Map.class)
             .map(resp -> {
                 var choices = (List<Map<String, Object>>) resp.get("choices");
-                return choices.get(0).get("message").toString();
+                var message = (Map<String, Object>) choices.get(0).get("message");
+                return (String) message.get("content");
             })
             .block();
     }
 
     private String buildPrompt(String filename, String diff) {
         return String.format("""
-                Review the following code diff from file: %s
+                You are an expert software engineer conducting a professional code review.
 
-                Only show comments about:
-                - Code quality
-                - Logic issues
-                - Security or performance concerns
-                - Best practices
-                - Naming or formatting issues
+                Analyze the following code diff from the file: %s
 
-                Provide bullet points. Be concise.
+                Focus only on:
+                - Code quality and maintainability
+                - Logical errors or edge cases
+                - Performance or security concerns
+                - Adherence to best practices
+                - Naming conventions and formatting issues
+
+                Respond with concise, constructive bullet points. Do not explain the diff or restate unchanged code.
+
+                Format:
+                - Use clear, markdown-compatible bullet points
+                - Do not include introductory or closing remarks
+                - Avoid stating you're an AI
 
                 ```diff
                 %s

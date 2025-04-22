@@ -4,7 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.beans.factory.annotation.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
@@ -24,6 +25,10 @@ import jakarta.transaction.Transactional;
 
 @Component
 public class ReviewWorker {
+	
+	
+	private static final Logger log = LoggerFactory.getLogger(ReviewWorker.class);
+
 
     private final PullRequestRepository prRepo;
     private final LLMReviewService llmService;
@@ -31,8 +36,8 @@ public class ReviewWorker {
     
     private final RestTemplate restTemplate = new RestTemplate();
     
-    @Value("${github.token}")
-    private String githubToken;
+//    @Value("${github.token}")
+//    private String githubToken;
 
     public ReviewWorker(PullRequestRepository prRepo, LLMReviewService llmService, ReviewCommentRepository reviewCommentRepo) {
         this.prRepo = prRepo;
@@ -50,7 +55,7 @@ public class ReviewWorker {
                 pr.setReviewStatus(ReviewStatus.PROCESSING);
                 prRepo.save(pr);
 
-                System.out.println("🤖 Running LLM review for PR #" + pr.getPrNumber());
+                log.info("🤖 Running LLM review for PR #{}",  pr.getPrNumber());
 
                 for (PullRequestFile file : pr.getFiles()) {
                     if (file.getPatch() == null) continue;
@@ -64,10 +69,10 @@ public class ReviewWorker {
                     reviewCommentRepo.save(rc);
                     
                     String commentBody = generateCombinedComment(pr.getFiles());
-                    postReviewCommentToGitHub(pr.getRepoOwner(), pr.getRepoName(), pr.getPrNumber(), commentBody);
+                    postReviewCommentToGitHub(pr.getRepoOwner(), pr.getRepoName(), pr.getPrNumber(), commentBody, pr.getAccessToken());
 
-                    System.out.println("📂 " + file.getFilename());
-                    System.out.println("💬 " + review);
+                    log.info("📂 {}", file.getFilename());
+                    log.info("💬 {}", review);
                 }
 
                 pr.setReviewStatus(ReviewStatus.DONE);
@@ -100,12 +105,12 @@ public class ReviewWorker {
         return sb.toString();
     }
     
-    private void postReviewCommentToGitHub(String owner, String repo, Long prNumber, String commentBody) {
+    private void postReviewCommentToGitHub(String owner, String repo, Long prNumber, String commentBody, String token) {
         String url = String.format("https://api.github.com/repos/%s/%s/issues/%d/comments", owner, repo, prNumber);
         
         HttpHeaders headers = new HttpHeaders();
         headers.setContentType(MediaType.APPLICATION_JSON);
-        headers.setBearerAuth(githubToken); // Injected from application.properties
+        headers.setBearerAuth(token); // Injected from application.properties
 
         Map<String, String> body = new HashMap<>();
         body.put("body", commentBody);
@@ -114,9 +119,9 @@ public class ReviewWorker {
 
         try {
             restTemplate.postForEntity(url, entity, String.class);
-            System.out.println("✅ Posted review comment to GitHub PR #" + prNumber);
+            log.info("✅ Posted review comment to GitHub PR #{}", prNumber);
         } catch (Exception e) {
-        	System.out.println("❌ Failed to post comment to GitHub"+ e.toString());
+        	log.error("❌ Failed to post comment to GitHub", e);
         }
     }
 

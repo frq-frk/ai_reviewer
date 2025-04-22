@@ -39,6 +39,28 @@ public class PullRequest {
 
     @OneToMany(mappedBy = "pullRequest", cascade = CascadeType.ALL)
     private List<PullRequestFile> files = new ArrayList<>();
+    
+    private Long installationId;
+
+    @Column(length = 2048)
+    private String accessToken;
+
+    // Add getters/setters
+    public Long getInstallationId() {
+        return installationId;
+    }
+
+    public void setInstallationId(Long installationId) {
+        this.installationId = installationId;
+    }
+
+    public String getAccessToken() {
+        return accessToken;
+    }
+
+    public void setAccessToken(String accessToken) {
+        this.accessToken = accessToken;
+    }
 
 	public Long getPrNumber() {
 		return prNumber;

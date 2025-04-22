@@ -36,13 +36,18 @@ public class WebhookService {
         // Extract info
         Map<String, Object> pullRequest = (Map<String, Object>) payload.get("pull_request");
         Map<String, Object> repo = (Map<String, Object>) payload.get("repository");
+        Map<String, Object> installation = (Map<String, Object>) payload.get("installation");
 
         String repoOwner = ((Map<String, Object>) repo.get("owner")).get("login").toString();
         String repoName = repo.get("name").toString();
         int prNumber = ((Number) pullRequest.get("number")).intValue();
+        long installationId = ((Number) installation.get("id")).longValue(); // 🆕 Get installation ID
 
-        GitHubPullRequest prData = githubApiService.fetchPullRequest(repoOwner, repoName, prNumber);
-        List<ChangedFile> changedFiles = githubApiService.fetchChangedFiles(repoOwner, repoName, prNumber);
+        // Get installation token (to call GitHub APIs as the bot)
+        String accessToken = githubApiService.getInstallationToken(installationId); // 🆕 Add this service
+
+        GitHubPullRequest prData = githubApiService.fetchPullRequest(repoOwner, repoName, prNumber, accessToken);
+        List<ChangedFile> changedFiles = githubApiService.fetchChangedFiles(repoOwner, repoName, prNumber, accessToken);
 
         PullRequest pr = new PullRequest();
         pr.setPrNumber((long) prData.getNumber());
@@ -52,6 +57,8 @@ public class WebhookService {
         pr.setBody(prData.getBody());
         pr.setAuthor(prData.getUser().getLogin());
         pr.setReviewStatus(ReviewStatus.PENDING);
+        pr.setInstallationId(installationId); // 🆕 Save this to use later
+        pr.setAccessToken(accessToken);       // 🆕 Optionally persist encrypted token for scheduler
 
         for (ChangedFile file : changedFiles) {
             PullRequestFile fileEntity = new PullRequestFile();
@@ -63,5 +70,4 @@ public class WebhookService {
 
         pullRequestRepository.save(pr);
     }
-
 }
