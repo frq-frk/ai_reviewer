@@ -1,21 +1,15 @@
 package com.saiyans.aicodereviewer.github;
 
-import java.io.BufferedReader;
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.nio.charset.StandardCharsets;
 import java.security.KeyFactory;
 import java.security.PrivateKey;
-import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.RSAPrivateCrtKeySpec;
 import java.time.Instant;
-import java.util.Base64;
 import java.util.Date;
 
 import org.bouncycastle.asn1.pkcs.RSAPrivateKey;
-import org.bouncycastle.util.io.pem.PemObject;
 import org.bouncycastle.util.io.pem.PemReader;
 
 import io.jsonwebtoken.Jwts;
@@ -58,7 +52,7 @@ public class GitHubJwtUtil {
                 asn1PrivKey.getPrime1(),
                 asn1PrivKey.getPrime2(),
                 asn1PrivKey.getExponent1(),
-                asn1PrivKey.getExponent2(),
+                asn1PrivKey.getExponent2(),	
                 asn1PrivKey.getCoefficient()
             );
 
