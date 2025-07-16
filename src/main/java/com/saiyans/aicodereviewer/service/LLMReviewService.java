@@ -1,5 +1,6 @@
 package com.saiyans.aicodereviewer.service;
 
+import java.time.Duration;
 import java.util.List;
 import java.util.Map;
 
@@ -42,7 +43,8 @@ public class LLMReviewService {
         return webClient.post()
             .bodyValue(request)
             .retrieve()
-            .bodyToMono(Map.class)
+            .bodyToMono(Map.class).retry(3)
+            .timeout(Duration.ofSeconds(10))
             .map(resp -> {
                 var choices = (List<Map<String, Object>>) resp.get("choices");
                 var message = (Map<String, Object>) choices.get(0).get("message");
