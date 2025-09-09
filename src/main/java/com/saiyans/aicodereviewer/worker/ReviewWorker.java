@@ -93,7 +93,7 @@ public class ReviewWorker {
 
             sb.append("### 💡 Review for `").append(file.getFilename()).append("`\n");
             for (ReviewComment comment : file.getComments()) {
-                sb.append("- ").append(comment.getComment()).append("\n");
+                sb.append(" ").append(comment.getComment()).append("\n");
             }
             sb.append("\n");
         }

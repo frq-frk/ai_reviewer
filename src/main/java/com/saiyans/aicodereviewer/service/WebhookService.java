@@ -32,6 +32,11 @@ public class WebhookService {
     @Transactional
     public void processWebhook(Map<String, Object> payload, String eventType) {
         if (!"pull_request".equals(eventType)) return;
+        
+        if (!payload.get("action").equals("opened") && !payload.get("action").equals("synchronize")) {
+            log.info("exiting as the pr even it not opened!!");
+        	return; // skip processing
+        }
 
         // Extract info
         Map<String, Object> pullRequest = (Map<String, Object>) payload.get("pull_request");
