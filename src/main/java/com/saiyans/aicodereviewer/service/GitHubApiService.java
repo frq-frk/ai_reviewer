@@ -1,9 +1,11 @@
 package com.saiyans.aicodereviewer.service;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -32,8 +34,8 @@ public class GitHubApiService {
         this.webClient = builder.baseUrl("https://api.github.com").build();
     }
 
-    public String getInstallationToken(long installationId) {
-        String jwt = GitHubJwtUtil.generateJWT();
+    public String getInstallationToken(long installationId, int appType) {
+        String jwt = GitHubJwtUtil.generateJWT(appType);
 
         Map<String, Object> response = webClient.post()
                 .uri("/app/installations/{id}/access_tokens", installationId)
@@ -70,4 +72,28 @@ public class GitHubApiService {
         return Arrays.asList(Objects.requireNonNull(response.getBody()));
     }
 
+    public List<ChangedFile> fetchCommitDiff(String repoOwner, String repoName, String commitSha, String accessToken) {
+        String url = String.format("https://api.github.com/repos/%s/%s/commits/%s", repoOwner, repoName, commitSha);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        headers.set("Accept", "application/vnd.github.v3+json");
+
+        HttpEntity<Void> request = new HttpEntity<>(headers);
+        ResponseEntity<Map> response = restTemplate.exchange(url, HttpMethod.GET, request, Map.class);
+
+        if (response.getStatusCode().is2xxSuccessful() && response.getBody() != null) {
+            List<Map<String, Object>> files = (List<Map<String, Object>>) response.getBody().get("files");
+            if (files == null) return Collections.emptyList();
+
+            return files.stream().map(file -> {
+                ChangedFile cf = new ChangedFile();
+                cf.setFilename((String) file.get("filename"));
+                cf.setStatus((String) file.get("status"));
+                cf.setPatch((String) file.get("patch")); // optional
+                return cf;
+            }).collect(Collectors.toList());
+        }
+
+        return Collections.emptyList();
+    }
 }

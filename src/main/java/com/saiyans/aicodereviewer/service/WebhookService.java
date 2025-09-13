@@ -49,7 +49,7 @@ public class WebhookService {
         long installationId = ((Number) installation.get("id")).longValue(); // 🆕 Get installation ID
 
         // Get installation token (to call GitHub APIs as the bot)
-        String accessToken = githubApiService.getInstallationToken(installationId); // 🆕 Add this service
+        String accessToken = githubApiService.getInstallationToken(installationId, 1); // 🆕 Add this service
 
         GitHubPullRequest prData = githubApiService.fetchPullRequest(repoOwner, repoName, prNumber, accessToken);
         List<ChangedFile> changedFiles = githubApiService.fetchChangedFiles(repoOwner, repoName, prNumber, accessToken);

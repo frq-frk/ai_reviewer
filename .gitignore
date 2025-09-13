@@ -111,3 +111,6 @@ github.token
 scripts/*.sh
 tmp/
 
+#PEM files
+*.pem
+

@@ -19,9 +19,12 @@ public class GitHubJwtUtil {
 
     private static final String GITHUB_APP_ID = "1225599"; // Replace with your App ID
 
-    public static String generateJWT() {
+    public static String generateJWT(int appType) {
         try {
-            PrivateKey privateKey = loadPrivateKey("saiyans-ai-code-reviewer-bot.2025-04-22.private-key.pem");
+        	PrivateKey privateKey = loadPrivateKey("saiyasn-autofix-ai-code-review-bot.2025-07-19.private-key.pem");
+        	if(appType == 1) {
+             		privateKey = loadPrivateKey("saiyans-ai-code-reviewer-bot.2025-04-22.private-key.pem");
+        	}
 
             Instant now = Instant.now();
             return Jwts.builder()
