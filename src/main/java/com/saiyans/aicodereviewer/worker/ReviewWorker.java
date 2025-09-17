@@ -47,8 +47,8 @@ public class ReviewWorker {
 
     @Transactional
     @Scheduled(fixedRate = 10000) // every 10 seconds
-    public void processPendingReviews() {
-        List<PullRequest> pendingPRs = prRepo.findPendingPullRequestsWithFiles();
+    public synchronized void processPendingReviews() {
+        List<PullRequest> pendingPRs = prRepo.findByReviewStatus(ReviewStatus.PENDING);
 
         for (PullRequest pr : pendingPRs) {
             try {

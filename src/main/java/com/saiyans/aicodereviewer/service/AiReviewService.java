@@ -19,11 +19,10 @@ public class AiReviewService {
 
     private final WebClient webClient;
 
-    public AiReviewService(@Value("${OPENAI_API_KEY") String apiKey) {
-        this.webClient = WebClient.builder()
-                .baseUrl("https://api.openai.com/v1/chat/completions")
-                .defaultHeader("Authorization", "Bearer " + apiKey)
-                .build();
+    public AiReviewService(@Value("${OPENAI_API_KEY}") String apiKey) {
+    	log.debug(apiKey);
+        this.webClient = WebClient.builder().baseUrl("https://api.openai.com/v1/chat/completions")
+				.defaultHeader("Authorization", "Bearer " + apiKey).build();
     }
 
     public String reviewAndFixPatch(String patch) {

@@ -18,7 +18,7 @@ public class LLMReviewService {
 	private final WebClient webClient;
 
 	public LLMReviewService(@Value("${OPENAI_API_KEY}") String apiKey) {
-		log.info(apiKey);
+		log.debug(apiKey);
 		this.webClient = WebClient.builder().baseUrl("https://api.openai.com/v1/chat/completions")
 				.defaultHeader("Authorization", "Bearer " + apiKey).build();
 	}

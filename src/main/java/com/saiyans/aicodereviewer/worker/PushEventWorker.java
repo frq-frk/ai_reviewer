@@ -31,14 +31,15 @@ public class PushEventWorker {
         this.gitHubService = gitHubService;
     }
 
-    // Runs every 30 seconds (adjust as needed)
+    // Runs every 10 seconds (adjust as needed)
     @Scheduled(fixedDelay = 10000)
     @Transactional
-    public void processPendingPushEvents() {
+    public synchronized void processPendingPushEvents() {
         List<PushEvent> pendingEvents = pushEventRepository.findByReviewStatus(ReviewStatus.PENDING);
 
         for (PushEvent event : pendingEvents) {
             try {
+            	event.setReviewStatus(ReviewStatus.PROCESSING);
                 System.out.println("Processing push event: " + event.getId());
 
                 List<PushFile> files = event.getFiles();
